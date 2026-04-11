@@ -24,7 +24,7 @@ ENV SPARK_LOCAL_IP=127.0.0.1
 RUN pip install --upgrade pip setuptools wheel && \
     pip install \
       jupyterlab \
-      "pyspark[pandas_on_spark]" \
+      "pyspark[pandas_on_spark]==3.5.8" \
       plotly \
       "pyiceberg[pyarrow,sql-postgres]" \
       Faker \
