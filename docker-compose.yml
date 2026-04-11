@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: iceberg-postgres
+    environment:
+      POSTGRES_DB: iceberg_catalog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  jupyter:
+    build: .
+    container_name: speedtest-structured-streaming
+    depends_on:
+      - postgres
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/workspace
+    environment:
+      PYSPARK_PYTHON: python3
+      SPARK_LOCAL_IP: 127.0.0.1
+
+volumes:
+  postgres_data:

@@ -1,0 +1,1 @@
+checkpoint_path = lambda x: f'/workspace/__checkpoints/{x}'
