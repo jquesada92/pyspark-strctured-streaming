@@ -1,0 +1,9 @@
+jupyterlab
+pyspark[pandas_on_spark]==3.5.8
+plotly
+dash
+dash-bootstrap-components
+pandas
+pyiceberg[pyarrow,sql-postgres]
+Faker
+python-dotenv

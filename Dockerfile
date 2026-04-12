@@ -21,17 +21,12 @@ ENV JAVA_HOME=/opt/java-home
 ENV PYSPARK_PYTHON=python3
 ENV SPARK_LOCAL_IP=127.0.0.1
 
+WORKDIR /workspace
+
+COPY requirements.txt /tmp/requirements.txt
+
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install \
-      jupyterlab \
-      jupyterlab-code-formatter \
-      black \
-      isort \
-      "pyspark[pandas_on_spark]==3.5.8" \
-      plotly \
-      "pyiceberg[pyarrow,sql-postgres]" \
-      Faker \
-      python-dotenv
+    pip install -r /tmp/requirements.txt
 
 RUN mkdir -p /opt/spark-jars
 
@@ -40,8 +35,6 @@ RUN wget -O /opt/spark-jars/iceberg-spark-runtime-3.5_2.12-1.10.1.jar \
 
 RUN wget -O /opt/spark-jars/postgresql-42.7.5.jar \
     https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar
-
-WORKDIR /workspace
 
 EXPOSE 8888
 

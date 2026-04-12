@@ -3,6 +3,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+
+
+
 APP_NAME = os.getenv("APP_NAME")
 CATALOG_NAME = os.getenv("CATALOG_NAME")
 CATALOG_DB = os.getenv("CATALOG_DB")

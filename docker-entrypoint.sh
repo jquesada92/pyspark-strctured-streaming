@@ -5,7 +5,7 @@ echo "Starting fake data generator in background..."
 python /workspace/generate_fake_data.py &
 
 echo "Starting JupyterLab..."
-exec jupyter lab \
+exec python -m jupyterlab \
   --ip=0.0.0.0 \
   --port=8888 \
   --no-browser \
