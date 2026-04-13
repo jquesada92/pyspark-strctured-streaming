@@ -2,7 +2,7 @@
 set -e
 
 echo "Starting fake data generator in background..."
-python /workspace/generate_fake_data.py &
+python /workspace/scripts/generate_fake_data.py &
 
 echo "Starting JupyterLab..."
 exec python -m jupyterlab \

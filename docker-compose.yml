@@ -10,19 +10,68 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d iceberg_catalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   jupyter:
     build: .
     container_name: speedtest-structured-streaming
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "8888:8888"
     volumes:
       - ./:/workspace
+    env_file:
+      - .env
     environment:
-      PYSPARK_PYTHON: python3
-      SPARK_LOCAL_IP: 127.0.0.1
+      PYTHONPATH: /workspace
 
+  streaming:
+      build: .
+      container_name: speedtest-streaming
+      depends_on:
+        postgres:
+          condition: service_healthy
+      entrypoint: ["python", "/workspace/scripts/struct_streaming.py"]
+      volumes:
+        - ./:/workspace
+      env_file:
+        - .env
+      environment:
+        PYTHONPATH: /workspace
+
+
+  dash:
+    build: .
+    container_name: speedtest-dashboard
+    depends_on:
+      postgres:
+        condition: service_healthy
+      streaming:
+        condition: service_started
+    entrypoint:
+      [
+        "bash",
+        "-lc",
+        "python /workspace/scripts/wait_for_iceberg_ready.py && python /workspace/apps/dash_app.py"
+      ]
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./:/workspace
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /workspace
+      WAIT_FOR_TABLES_TIMEOUT: 600
+      WAIT_FOR_TABLES_INTERVAL: 10
+    restart: unless-stopped
+
+ 
 volumes:
   postgres_data:

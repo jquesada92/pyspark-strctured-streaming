@@ -12,15 +12,18 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 from pandas import melt
 from plotly.subplots import make_subplots
+from utils import *
 
 
+
+spark = get_spark()
 def line_chart_download_vs_upload(fig, df):
 
-    x = df.timestamp
+    x = df.window_start
 
     fig.add_trace(
         go.Scatter(
-            x=x, y=df.upload_Mbytes, name="Upload (Mbps)", line=dict(color=upload_color)
+            x=x, y=df.avg_upload_speed, name="Upload (Mbps)", line=dict(color=upload_color)
         ),
         row=1,
         col=2,
@@ -37,7 +40,7 @@ def line_chart_download_vs_upload(fig, df):
     fig.add_trace(
         go.Scatter(
             x=x,
-            y=df.download_Mbytes,
+            y=df.avg_download_speed,
             name="Download (Mbps)",
             line=dict(color=download_color),
         ),
@@ -104,8 +107,8 @@ def gauges_indicators(fig, value):
 
     fig.add_trace(
         gauge_chart(
-            value["upload_Mbytes"],
-            steps=[[0, 10], [10, 15], [15, 20]],
+            value["avg_upload_speed"],
+            steps=[[0, 50], [50, 150], [150, 250]],
             title=f"<span style='font-size:0.8em;color:{upload_color}'>Upload</span>",
             color=upload_color,
         ),
@@ -115,8 +118,8 @@ def gauges_indicators(fig, value):
 
     fig.add_trace(
         gauge_chart(
-            value["download_Mbytes"],
-            steps=[[0, 450], [450, 600], [600, 700]],
+            value["avg_download_speed"],
+            steps=[[0, 50], [50, 150], [150, 250]],
             title=f"<span style='font-size:0.8em;color:{download_color}'>Download</span>",
             color=download_color,
         ),
@@ -184,7 +187,7 @@ def multiplot_speedtest(df):
         vertical_spacing=0.15,
     )
 
-    values = df[["download_Mbytes", "upload_Mbytes"]].iloc[-3:].mean()
+    values = df[["avg_download_speed", "avg_upload_speed"]].iloc[-3:].mean()
     gauges_indicators(fig, values)
     line_chart_download_vs_upload(fig, df)
     fig.update_layout(height=550, margin=dict(l=35, r=35, b=30, t=55))
@@ -202,9 +205,9 @@ def register_Callback(app):
     def streamFig(intervals):
         df = (
             spark.read.table(L3_HRS_TABLE)
-            .orderBy("timestamp", ascending=False)
+            .orderBy("window_start", ascending=False)
             .toPandas()
-            .sort_values("timestamp", ascending=True)
+            .sort_values("window_start", ascending=True)
         )
         return multiplot_speedtest(df)
 
