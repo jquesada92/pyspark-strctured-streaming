@@ -13,7 +13,7 @@ REQUIRED_TABLES = [
     os.getenv("RAW_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.raw_logs"),
     os.getenv("FORMATTED_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.formatted_speed_test_logs"),
     os.getenv("DOW_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.summary_day_of_the_week"),
-    os.getenv("RECENT_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.last_15min_logs"),
+    os.getenv("RECENT_TABLE",  f"{CATALOG_NAME}.{CATALOG_DB}.last_hour_logs")
 ]
 
 MAX_WAIT_SECONDS = int(os.getenv("WAIT_FOR_TABLES_TIMEOUT", "600"))

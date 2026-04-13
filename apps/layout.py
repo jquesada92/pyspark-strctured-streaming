@@ -145,36 +145,63 @@ top_info_row = dbc.Row(
 
 navbar = dbc.Navbar(
     dbc.Container(
-        [
-            html.A(
-                # Use row and col to control vertical alignment of logo / brand
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.Img(
-                                src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/6a71877ca0b416f915f02bc7658c9cdcc0fcb2a1/img/git_logo.png?raw=true",
-                                height="30px",
-                            )
-                        ),
-                        dbc.Col(
-                            dbc.NavbarBrand(
-                                "Network Speed Test by Jose Quesada", className="ms-2"
-                            )
-                        ),
-                    ],
-                    align="center",
-                    className="g-0",
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.NavbarBrand(
+                        "Network Speed Test",
+                        className="ms-2",
+                    ),
+                    width="auto",
                 ),
-                href="https://github.com/jquesada92/pyspark-strctured-streaming",
-                style={"textDecoration": "none"},
-            ),
-            dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
-        ]
+                dbc.Col(
+                    html.Div(
+                        [
+                            html.A(
+                                html.Img(
+                                    src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/6a71877ca0b416f915f02bc7658c9cdcc0fcb2a1/img/git_logo.png?raw=true",
+                                    style={
+                                        "height": "35px",
+                                        "width": "35px",
+                                        "objectFit": "contain",
+                                    },
+                                ),
+                                href="https://github.com/jquesada92/pyspark-strctured-streaming",
+                                target="_blank",
+                                style={"marginRight": "14px"},
+                            ),
+                            html.A(
+                                html.Img(
+                                    src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/main/img/linkedin.png?raw=true",
+                                    style={
+                                        "height": "35px",
+                                        "width": "35px",
+                                        "objectFit": "contain",
+                                    },
+                                ),
+                                href="https://www.linkedin.com/in/jquesada92/",
+                                target="_blank",
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "justifyContent": "flex-end",
+                            "alignItems": "center",
+                            "width": "100%",
+                        },
+                    ),
+                    width=True,
+                ),
+            ],
+            align="center",
+            className="g-0 w-100",
+            style={"width": "100%"},
+        ),
+        fluid=True,
     ),
     color=nav_bar_bgcolor,
     dark=True,
 )
-
 
 streaming_col = dbc.Col(dcc.Graph(id="stream_line_chart", config=config))
 heatmap_col = dbc.Col(dcc.Graph(id="heatmaps"))

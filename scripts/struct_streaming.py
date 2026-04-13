@@ -17,15 +17,17 @@ spark.sql(f"CREATE NAMESPACE IF NOT EXISTS {CATALOG_NAME}.{CATALOG_DB}")
 print(LOGS_PATH)
 print(RAW_TABLE)
 
+
 (
     spark.readStream.option("cleanSource", "delete").format('json').option("multiline","true").schema(SCHEMA_LOGS).load(LOGS_PATH)
     .writeStream.format("iceberg")
     .queryName("raw_logs_stream")
-    .trigger(processingTime='0 seconds')
+    .trigger(processingTime='5 seconds')
     .outputMode("append")
     .option("checkpointLocation", checkpoint_path("raw_logs"))
     .toTable(RAW_TABLE)
 )
+
 
 def formatting_raw_logs():
 
@@ -65,7 +67,7 @@ def formatting_raw_logs():
         )
         .writeStream.format("iceberg")
         .queryName("formatted_logs_stream")
-        .trigger(processingTime='0 seconds')
+        .trigger(processingTime='5 seconds')
         .outputMode("append")
         .option("checkpointLocation", checkpoint_path("formatted_logs"))
         .toTable(FORMATTED_TABLE)
@@ -147,6 +149,30 @@ def agg_speed_test(sdf, groupBy):
 streaming_logs_sdf = spark.readStream.table(FORMATTED_TABLE)
 
 
+(spark.readStream.table(FORMATTED_TABLE).filter(
+            F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 60 MINUTES")
+        )
+        .withWatermark("timestamp", "60 seconds")
+        .groupBy(  F.window(F.col("timestamp"), "5 seconds")).agg(
+                F.mean("download_Mbytes").alias("avg_download_speed"),
+                F.mean("upload_Mbytes").alias("avg_upload_speed"),
+                F.count("id").alias("count_of_test"),
+            )
+        .select(
+        F.col("window.start").alias("window_start"),
+        F.col("window.end").alias("window_end"),
+        "avg_download_speed",
+        "avg_upload_speed",
+        "count_of_test"
+    ).writeStream.format("iceberg")
+    .trigger(processingTime='5 seconds')
+    .queryName(RECENT_LOGS)
+    .option("checkpointLocation", checkpoint_path("last_hour_logs"))
+    .outputMode("complete")
+    .toTable(RECENT_TABLE)
+)
+
+
 def update_agg_by_day_of_week(streaming_logs_sdf):
     """
     Average download speed by day of week - Gold layer
@@ -188,23 +214,6 @@ def update_agg_by_day_of_week(streaming_logs_sdf):
 
 update_agg_by_day_of_week(streaming_logs_sdf)
 
-(agg_speed_test(
-    streaming_logs_sdf
-    .filter(
-        F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 90 MINUTES")
-    )
-  .withWatermark("timestamp", "20 minutes"),
-    F.window(F.col("timestamp"), "15 seconds")
-    )
-    .select(
-        F.col("window.start").alias("window_start"),
-        F.col("window.end").alias("window_end"),
-        "avg_download_speed",
-        "avg_upload_speed",
-        "count_of_test"
-    ).writeStream.queryName("recent_stream").trigger(processingTime='20 seconds').outputMode("complete")
-    .option("checkpointLocation", checkpoint_path('recent')).toTable(RECENT_TABLE)
-)
 
 print("Active queries:", [q.name for q in spark.streams.active])
 spark.streams.awaitAnyTermination()

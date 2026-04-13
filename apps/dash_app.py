@@ -14,6 +14,11 @@ spark = get_spark()
 
 
 
+
+
+
+
+
 def register_Callback(app):
 
     @app.callback(
@@ -24,12 +29,11 @@ def register_Callback(app):
         ],
     )
     def streamFig(intervals,value):
+        
         spark.catalog.refreshTable(RECENT_TABLE)
-        df = ( spark.read.table(RECENT_TABLE)
-              .filter(F.col('window_start') >= F.current_timestamp() - F.expr("INTERVAL 90 MINUTES"))
-            .orderBy("window_start", ascending=False)
-            .toPandas())
-
+        df = spark.read.table(RECENT_TABLE).where("""window_start >= current_timestamp() - INTERVAL 60 MINUTES""").toPandas()
+        
+        
         def smooth_recent_df(df, rule: str):
             if df.empty:
                 return df

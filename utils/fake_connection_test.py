@@ -262,7 +262,7 @@ class FakeSpeedTestGenerator:
         raw =  Path(filepath(raw_path))
         raw.parent.mkdir(parents=True, exist_ok=True)
         temp.rename(raw)
-        return filepath
+        return raw
     
     def generate_multiple_files(self,
                                 interval_minutes:float = 0.5 ) -> list:
