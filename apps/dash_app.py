@@ -204,7 +204,7 @@ def register_Callback(app):
     )
     def streamFig(intervals):
         df = (
-            spark.read.table(L3_HRS_TABLE)
+            spark.read.table(RECENT_TABLE)
             .orderBy("window_start", ascending=False)
             .toPandas()
             .sort_values("window_start", ascending=True)

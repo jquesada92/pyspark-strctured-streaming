@@ -21,8 +21,8 @@ print(RAW_TABLE)
     spark.readStream.option("cleanSource", "delete").format('json').option("multiline","true").schema(SCHEMA_LOGS).load(LOGS_PATH)
     .writeStream.format("iceberg")
     .queryName("raw_logs_stream")
+    .trigger(processingTime='0 seconds')
     .outputMode("append")
-    .trigger(processingTime="1 minute")
     .option("checkpointLocation", checkpoint_path("raw_logs"))
     .toTable(RAW_TABLE)
 )
@@ -65,6 +65,8 @@ def formatting_raw_logs():
         )
         .writeStream.format("iceberg")
         .queryName("formatted_logs_stream")
+        .trigger(processingTime='0 seconds')
+        .outputMode("append")
         .option("checkpointLocation", checkpoint_path("formatted_logs"))
         .toTable(FORMATTED_TABLE)
     )
@@ -188,9 +190,11 @@ update_agg_by_day_of_week(streaming_logs_sdf)
 
 (agg_speed_test(
     streaming_logs_sdf
-    .filter(F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 3 HOURS"))
-    .withWatermark("timestamp", "3 hours")
-     ,F.window(F.col("timestamp"), "10 minutes", "5 minutes")
+    .filter(
+        F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 20 MINUTES")
+    )
+  .withWatermark("timestamp", "20 minutes"),
+    F.window(F.col("timestamp"), "15 seconds")
     )
     .select(
         F.col("window.start").alias("window_start"),
@@ -198,7 +202,8 @@ update_agg_by_day_of_week(streaming_logs_sdf)
         "avg_download_speed",
         "avg_upload_speed",
         "count_of_test"
-    ).writeStream.queryName("last_3h_stream").outputMode("complete").option("checkpointLocation", checkpoint_path('last_3h')).toTable(L3_HRS_TABLE)
+    ).writeStream.queryName("recent_stream").trigger(processingTime='20 seconds').outputMode("complete")
+    .option("checkpointLocation", checkpoint_path('recent')).toTable(RECENT_TABLE)
 )
 
 print("Active queries:", [q.name for q in spark.streams.active])

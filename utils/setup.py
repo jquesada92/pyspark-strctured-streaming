@@ -28,7 +28,7 @@ POSTGRES_JAR = os.getenv("POSTGRES_JAR")
 RAW_TABLE = os.getenv("RAW_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.raw_logs")
 FORMATTED_TABLE = os.getenv("FORMATTED_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.formatted_speed_test_logs")
 DOW_TABLE = os.getenv("DOW_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.summary_day_of_the_week")
-L3_HRS_TABLE = os.getenv("L3_HRS_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.last_3hrs_logs")
+RECENT_TABLE = os.getenv("L3_HRS_TABLE", f"{CATALOG_NAME}.{CATALOG_DB}.last_15min_logs")
 
 PYICEBERG_CATALOG_URI = os.getenv("PYICEBERG_CATALOG_URI")
 
