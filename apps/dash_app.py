@@ -225,7 +225,7 @@ config = {"displaylogo": False, "scrollZoom": False, "displayModeBar": False}
 
 updates = dcc.Interval(
     id="interval-component",     
-    interval=60 * 1000,
+    interval=10 * 1000,
     n_intervals=0  
 )
 
