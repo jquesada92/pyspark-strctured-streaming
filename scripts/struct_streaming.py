@@ -191,7 +191,7 @@ update_agg_by_day_of_week(streaming_logs_sdf)
 (agg_speed_test(
     streaming_logs_sdf
     .filter(
-        F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 20 MINUTES")
+        F.col("timestamp") >= F.current_timestamp() - F.expr("INTERVAL 90 MINUTES")
     )
   .withWatermark("timestamp", "20 minutes"),
     F.window(F.col("timestamp"), "15 seconds")

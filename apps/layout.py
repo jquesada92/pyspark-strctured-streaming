@@ -152,7 +152,7 @@ navbar = dbc.Navbar(
                     [
                         dbc.Col(
                             html.Img(
-                                src="https://img.favpng.com/15/0/12/white-cat-github-logo-illustration-8RyQXXQV.jpg",
+                                src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/6a71877ca0b416f915f02bc7658c9cdcc0fcb2a1/img/git_logo.png?raw=true",
                                 height="30px",
                             )
                         ),
@@ -165,13 +165,13 @@ navbar = dbc.Navbar(
                     align="center",
                     className="g-0",
                 ),
-                href="https://www.linkedin.com/in/jquesada92",
+                href="https://github.com/jquesada92/pyspark-strctured-streaming",
                 style={"textDecoration": "none"},
             ),
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
         ]
     ),
-    color=paper_bgcolor,
+    color=nav_bar_bgcolor,
     dark=True,
 )
 

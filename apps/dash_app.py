@@ -6,7 +6,7 @@ from utils import *
 from layout import layout
 from plots import *
 from pandas import to_datetime
-
+import pyspark.sql.functions as F
 
 
 spark = get_spark()
@@ -26,6 +26,7 @@ def register_Callback(app):
     def streamFig(intervals,value):
         spark.catalog.refreshTable(RECENT_TABLE)
         df = ( spark.read.table(RECENT_TABLE)
+              .filter(F.col('window_start') >= F.current_timestamp() - F.expr("INTERVAL 90 MINUTES"))
             .orderBy("window_start", ascending=False)
             .toPandas())
 
