@@ -5,13 +5,12 @@ from dash.dependencies import Input, Output
 from utils import *
 from layout import layout
 from plots import *
-from pandas import to_datetime
+from funcs import *
+
 import pyspark.sql.functions as F
 
 
 spark = get_spark()
-
-
 
 
 
@@ -25,43 +24,19 @@ def register_Callback(app):
         Output("stream_line_chart", "figure"),
         [
             Input("interval-component", "n_intervals"),
+            Input("rolling-window", "value"),
             Input('smoothing-rule', "value")
         ],
     )
-    def streamFig(intervals,value):
+    def streamFig(intervals,rolling,resample):
         
         spark.catalog.refreshTable(RECENT_TABLE)
         df = spark.read.table(RECENT_TABLE).where("""window_start >= current_timestamp() - INTERVAL 60 MINUTES""").toPandas()
         
         
-        def smooth_recent_df(df, rule: str):
-            if df.empty:
-                return df
-
-            df = df.copy()
-            df["window_start"] = to_datetime(df["window_start"])
-            df = df.sort_values("window_start")
-
-            if rule == "raw":
-                return df
-
-            grouped = (
-                df.set_index("window_start")
-                .resample(rule)
-                .agg(
-                    {
-                        "avg_download_speed": "mean",
-                        "avg_upload_speed": "mean",
-                        "count_of_test": "sum",
-                    }
-                )
-                .dropna()
-                .reset_index()
-            )
-            return grouped
 
         
-        return multiplot_speedtest(smooth_recent_df(df,value))
+        return multiplot_speedtest( apply_rolling_average(smooth_recent_df(df,resample),rolling))
 
     @app.callback(
         Output("heatmaps", "figure"),

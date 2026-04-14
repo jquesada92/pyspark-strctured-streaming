@@ -1,0 +1,63 @@
+.neon-slider .rc-slider {
+  padding: 10px 0 24px 0;
+}
+
+.neon-slider .rc-slider-rail {
+  background: rgba(50, 246, 255, 0.22) !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+}
+
+.neon-slider .rc-slider-track {
+  background: #32f6ff !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 0 8px rgba(50, 246, 255, 0.95),
+    0 0 16px rgba(50, 246, 255, 0.55) !important;
+}
+
+.neon-slider .rc-slider-handle {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -6px !important;
+  border: 2px solid #d09cff !important;
+  background: #32f6ff !important;
+  box-shadow:
+    0 0 0 4px rgba(50, 246, 255, 0.20),
+    0 0 12px rgba(50, 246, 255, 1),
+    0 0 24px rgba(50, 246, 255, 0.85) !important;
+  opacity: 1 !important;
+}
+
+.neon-slider .rc-slider-dot {
+  width: 10px !important;
+  height: 10px !important;
+  bottom: -2px !important;
+  border: 2px solid #32f6ff !important;
+  background: #0f1720 !important;
+}
+
+.neon-slider .rc-slider-dot-active {
+  border-color: #32f6ff !important;
+  background: #32f6ff !important;
+  box-shadow: 0 0 8px rgba(50, 246, 255, 0.9) !important;
+}
+
+.neon-slider .rc-slider-mark {
+  top: 22px !important;
+}
+
+.neon-slider .rc-slider-mark-text {
+  color: #bffcff !important;
+  opacity: 1 !important;
+  font-size: 12px !important;
+}
+
+.neon-slider .rc-slider-mark-text-active {
+  color: #32f6ff !important;
+  font-weight: 700 !important;
+  text-shadow:
+    0 0 6px rgba(50, 246, 255, 0.9),
+    0 0 12px rgba(50, 246, 255, 0.5);
+}

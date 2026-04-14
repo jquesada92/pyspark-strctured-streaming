@@ -7,25 +7,13 @@ import dash_bootstrap_components as dbc
 config = {"displaylogo": False, "scrollZoom": False, "displayModeBar": False}
 
 updates = dcc.Interval(
-    id="interval-component",     
+    id="interval-component",
     interval=15 * 1000,
-    n_intervals=0  
+    n_intervals=0,
 )
-
 
 simulation_info = html.Div(
     [
-        html.Div(
-            "Simulation",
-            style={
-                "color": "#9aa4b2",
-                "fontSize": "12px",
-                "fontWeight": "600",
-                "textTransform": "uppercase",
-                "letterSpacing": "0.5px",
-                "marginBottom": "4px",
-            },
-        ),
         html.Div(
             "This dashboard simulates network speed test telemetry over time, "
             "showing upload and download trends as if they were collected from "
@@ -33,80 +21,109 @@ simulation_info = html.Div(
             style={
                 "color": default_fontcolor,
                 "fontSize": "13px",
-                "lineHeight": "1.3",
+                "lineHeight": "1.35",
                 "margin": "0",
             },
         ),
     ],
     style={
         "paddingLeft": "24px",
-        "paddingTop": "0px",
-        "paddingBottom": "0px",
-        "maxWidth": "520px",
+        "paddingTop": "4px",
+        "paddingBottom": "4px",
+        "maxWidth": "700px",
     },
 )
 
+
+rolling_marks = {
+    0: {"label": "Raw", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    1: {"label": "1m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    2: {"label": "2m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    3: {"label": "5m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    4: {"label": "10m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+}
+
+
+
+
+rolling_controls = html.Div(
+    [
+        html.Div(
+            "Rolling Avg",
+            style={
+                "color": default_fontcolor,
+                "fontWeight": "600",
+                "fontSize": "14px",
+                "marginBottom": "8px",
+                "whiteSpace": "nowrap",
+            },
+        ),
+        html.Div(
+            dcc.Slider(
+                id="rolling-window",
+                min=0,
+                max=4,
+                step=None,
+                value=0,
+                marks=rolling_marks,
+                included=False
+            ),
+            className="neon-slider",
+        ),
+    ],
+    style={"width": "100%", "maxWidth": "460px"},
+)
+
+
+smoothing_marks = {
+    0: {"label": "Raw", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    1: {"label": "30s", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    2: {"label": "1m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    3: {"label": "5m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    4: {"label": "10m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+    5: {"label": "15m", "style": {"color": "#bffcff", "fontSize": "12px"}},
+}
 smoothing_controls = html.Div(
     [
-        html.Label(
-            "Smoothing",
+        html.Div(
+            "Time Grouping",
             style={
                 "color": default_fontcolor,
-                "marginRight": "12px",
-                "marginBottom": "0px",
-                "lineHeight": "1",
-                "fontSize": "14px",
                 "fontWeight": "600",
-                "whiteSpace": "nowrap",
-            },
-        ),
-        dcc.RadioItems(
-            id="smoothing-rule",
-            options=[
-                {"label": "Raw", "value": "raw"},
-                {"label": "30s", "value": "30s"},
-                {"label": "1m", "value": "1min"},
-                {"label": "5m", "value": "5min"},
-                {"label": "10m", "value": "10min"},
-                {"label": "15m", "value": "15min"},
-            ],
-            value="raw",
-            inline=True,
-            labelStyle={
-                "display": "inline-flex",
-                "alignItems": "center",
-                "marginRight": "12px",
-                "marginBottom": "0px",
-                "lineHeight": "1",
                 "fontSize": "14px",
-                "color": default_fontcolor,
+                "marginBottom": "8px",
                 "whiteSpace": "nowrap",
             },
-            inputStyle={
-                "marginRight": "4px",
-                "marginTop": "0px",
-                "verticalAlign": "middle",
-            },
-            style={
-                "display": "flex",
-                "alignItems": "center",
-                "flexWrap": "nowrap",
-                "margin": "0px",
-                "padding": "0px",
-                "lineHeight": "1",
-            },
         ),
+        html.Div(
+            dcc.Slider(
+                id="smoothing-rule",
+                min=0,
+                max=5,
+                step=None,
+                value=0,
+                marks=smoothing_marks ,
+                included=False,
+                
+            ),
+            className="neon-slider",
+        ),
+    ],
+    style={"width": "100%", "maxWidth": "460px"},
+)
+
+controls_panel = html.Div(
+    [
+        rolling_controls,
+        smoothing_controls,
     ],
     style={
         "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "flex-end",
-        "flexWrap": "nowrap",
-        "whiteSpace": "nowrap",
+        "flexDirection": "column",
+        "alignItems": "stretch",
+        "justifyContent": "center",
+        "gap": "16px",
         "width": "100%",
-        "margin": "0px",
-        "padding": "0px",
-        "minHeight": "24px",
     },
 )
 
@@ -114,7 +131,7 @@ top_info_row = dbc.Row(
     [
         dbc.Col(
             simulation_info,
-            width=6,
+            width=8,
             style={
                 "display": "flex",
                 "alignItems": "center",
@@ -123,8 +140,8 @@ top_info_row = dbc.Row(
             },
         ),
         dbc.Col(
-            smoothing_controls,
-            width=6,
+            controls_panel,
+            width=4,
             style={
                 "display": "flex",
                 "justifyContent": "flex-end",
@@ -136,90 +153,89 @@ top_info_row = dbc.Row(
         ),
     ],
     className="g-0",
+    
     style={
         "margin": "0px",
         "padding": "0px",
-    },
+        "backgroundColor": paper_bgcolor, 
+        "color": default_fontcolor}
+
 )
 
-
 navbar = dbc.Navbar(
-    dbc.Container(
-        dbc.Row(
-            [
-                dbc.Col(
-                    dbc.NavbarBrand(
-                        "Network Speed Test",
-                        className="ms-2",
-                    ),
-                    width="auto",
+    dbc.Row(
+        [
+            dbc.Col(
+                dbc.NavbarBrand(
+                    "Network Speed Test",
+                    className="ms-2",
                 ),
-                dbc.Col(
-                    html.Div(
-                        [
-                            html.A(
-                                html.Img(
-                                    src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/6a71877ca0b416f915f02bc7658c9cdcc0fcb2a1/img/git_logo.png?raw=true",
-                                    style={
-                                        "height": "35px",
-                                        "width": "35px",
-                                        "objectFit": "contain",
-                                    },
-                                ),
-                                href="https://github.com/jquesada92/pyspark-strctured-streaming",
-                                target="_blank",
-                                style={"marginRight": "14px"},
+                width="auto",
+            ),
+            dbc.Col(
+                html.Div(
+                    [
+                        html.A(
+                            html.Img(
+                                src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/6a71877ca0b416f915f02bc7658c9cdcc0fcb2a1/img/git_logo.png?raw=true",
+                                style={
+                                    "height": "35px",
+                                    "width": "35px",
+                                    "objectFit": "contain",
+                                },
                             ),
-                            html.A(
-                                html.Img(
-                                    src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/main/img/linkedin.png?raw=true",
-                                    style={
-                                        "height": "35px",
-                                        "width": "35px",
-                                        "objectFit": "contain",
-                                    },
-                                ),
-                                href="https://www.linkedin.com/in/jquesada92/",
-                                target="_blank",
+                            href="https://github.com/jquesada92/pyspark-strctured-streaming",
+                            target="_blank",
+                            style={"marginRight": "14px"},
+                        ),
+                        html.A(
+                            html.Img(
+                                src="https://github.com/jquesada92/pyspark-strctured-streaming/blob/main/img/linkedin.png?raw=true",
+                                style={
+                                    "height": "35px",
+                                    "width": "35px",
+                                    "objectFit": "contain",
+                                },
                             ),
-                        ],
-                        style={
-                            "display": "flex",
-                            "justifyContent": "flex-end",
-                            "alignItems": "center",
-                            "width": "100%",
-                        },
-                    ),
-                    width=True,
+                            href="https://www.linkedin.com/in/jquesada92/",
+                            target="_blank",
+                        ),
+                    ],
+                    style={
+                        "display": "flex",
+                        "justifyContent": "flex-end",
+                        "alignItems": "center",
+                        "width": "100%",
+                    },
                 ),
-            ],
-            align="center",
-            className="g-0 w-100",
-            style={"width": "100%"},
-        ),
-        fluid=True,
+                width=True,
+            ),
+        ],
+        align="center",
+        className="g-0 w-100",
+        style={"width": "100%", "margin": "0"},
     ),
     color=nav_bar_bgcolor,
     dark=True,
+    className="px-3 mb-0",
 )
 
 streaming_col = dbc.Col(dcc.Graph(id="stream_line_chart", config=config))
-heatmap_col = dbc.Col(dcc.Graph(id="heatmaps"))
+heatmap_col = dbc.Col(dcc.Graph(id="heatmaps", config=config))
 
 layout = dbc.Container(
-    [   
+    [
         navbar,
-        dbc.Container(
-            [
-                top_info_row ,
-                updates,
-                dcc.Store(id="last_32hrs"),
-                dbc.Row(streaming_col),
-                dbc.Row(heatmap_col),
-            ],
-            style={"background-color": paper_bgcolor, "color": default_fontcolor},
-        ),
-    ]
+        top_info_row,
+        updates,
+        dcc.Store(id="last_32hrs"),
+        dbc.Row(streaming_col, className="g-0"),
+        dbc.Row(heatmap_col, className="g-0"),
+    ],
+    fluid=False,
+    className="px-0",
+    style={
+        "backgroundColor": paper_bgcolor,
+        "color": default_fontcolor,
+    },
 )
-
-
