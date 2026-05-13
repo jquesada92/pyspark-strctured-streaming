@@ -1,8 +1,8 @@
 # PySpark Structured Streaming Speed Test Monitor
 
-A local lakehouse-style project that captures internet speed test events, ingests them with **PySpark Structured Streaming**, stores them in **Apache Iceberg** tables backed by a **PostgreSQL catalog**, and serves a near-real-time **Dash** dashboard.
+This project started from a personal need to prove that my internet provider was not consistently delivering the service quality I was paying for. To support that, I built a local lakehouse-style solution that captures internet speed test events, processes them with PySpark Structured Streaming, stores them in Apache Iceberg tables using a PostgreSQL catalog, and visualizes the results in a near-real-time Dash dashboard.
 
-This project is designed for local development and experimentation. Instead of requiring repeated speed tests from the host machine, it can generate **synthetic Speedtest-like JSON files** that mimic the structure of the Ookla Speedtest CLI output. A real collector script is also included for cases where you want to run actual tests.
+The project is designed for local development and experimentation. It includes a real collector script for running actual speed tests, as well as a synthetic data generator that creates Speedtest-like JSON files following the structure of the Ookla Speedtest CLI output.
 
 ## What this project does
 
